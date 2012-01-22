@@ -80,12 +80,8 @@ Game.prototype.handleGestureEnd = function(e) {
 	}
 }
 
-Game.prototype.handleScroll = function(e) {
-	e.preventDefault();
-
-	var scrollValue = (e.wheelDelta == undefined) ? e.detail * -1 : e.wheelDelta;
-
-	if (scrollValue >= 0) {
+Game.prototype.handleScroll = function(delta) {
+	if (delta >= 0) {
 		this.zoomIn();
 	} else {
 		this.zoomOut();
@@ -121,7 +117,7 @@ Game.prototype.handleKeyDown = function(e) {
 			break;
 	}
 
-	this.draw();
+	//this.draw();
 }
 
 Game.prototype.handleDrag = function(e) {
@@ -263,6 +259,7 @@ Game.prototype.draw = function(srcX, srcY, destX, destY) {
 	var tileWidth = this.tile.width * this.zoomHelper.level;
     var building = new Image();
 	building.src = "../img/icecream.png";
+	
 	for (var row = startRow; row < rowCount; row++) {
 		for (var col = startCol; col < colCount; col++) {
 			var xpos = (row - col) * tileHeight + (this.grid.width * this.zoomHelper.level);
@@ -272,8 +269,8 @@ Game.prototype.draw = function(srcX, srcY, destX, destY) {
 
 			if (this.tileMap[row] != null && this.tileMap[row][col] != null) {
 				//Place building
-				ypos -= (building.height * this.zoomHelper.level) - this.tile.height;
-				xpos -= ((this.zoomHelper.level * building.width) / 2) - (this.tile.width / 2);
+				ypos -= (building.height * this.zoomHelper.level) - tileHeight;
+				xpos -= ((this.zoomHelper.level * building.width) / 2) - (tileWidth / 2);
 				this.c.drawImage(building, Math.round(xpos), Math.round(ypos), (building.width * this.zoomHelper.level), (building.height * this.zoomHelper.level));
 			} else {
 				if (Math.round(xpos) + tileWidth >= srcX &&
@@ -303,6 +300,8 @@ Game.prototype.zoomIn = function() {
 	// Center the view
 	this.scrollPosition.y -= (this.grid.height * this.zoomHelper.level) + this.scrollPosition.y;
 	this.scrollPosition.x -= (this.grid.width * this.zoomHelper.level) + this.scrollPosition.x;
+	
+	this.draw();
 }
 
 Game.prototype.zoomOut = function() {
@@ -320,6 +319,8 @@ Game.prototype.zoomOut = function() {
 	// Center the view
 	this.scrollPosition.y -= (this.grid.height * this.zoomHelper.level) + this.scrollPosition.y;
 	this.scrollPosition.x -= (this.grid.width * this.zoomHelper.level) + this.scrollPosition.x;
+	
+	this.draw();
 }
 
 Game.prototype.rotateGrid = function(mW, mH, sW, sH) {
